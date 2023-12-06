@@ -1,0 +1,81 @@
+import random 
+from math import comb
+
+
+def topDownshuffle(deck):
+    #returns an index between 0 - the length of deck
+    randomIndex = random.randrange(len(deck))
+
+    #creates deck with the first value shuffled into somewhere else in the deck
+    randomDeck = deck[1 : randomIndex + 1] + [deck[0]] + deck[randomIndex + 1 : ]
+
+    return randomDeck
+
+
+
+def riffleShuffle(deck):
+
+    #gives the number of cards 
+    n = len(deck)
+
+    #generates a list of probabilities for left deck with length k 
+    #possible k values 0 - n
+    probabilites = [comb(n, k) / 2**n for k in range(n)]
+    
+    #choosing a value of k
+    k = random.choices(deck, probabilites)[0]
+
+    leftHand = deck[:k]
+    rightHand = deck[k:]
+
+    l = len(leftHand)
+    r = len(rightHand)
+    shuffledDeck = []
+
+    #while loop to randomly put in cards from left and right, and breaks when one deck becomes empty
+    while l and r > 0:
+        nextCardProbability = [l/(l+r), r/(l+r)]
+        nextCard = random.choices([leftHand[-1], rightHand[-1]], nextCardProbability)[0]
+        shuffledDeck.insert(0, nextCard)
+
+        #need to update
+        if nextCard in leftHand:
+            l -= 1
+            leftHand.pop(-1)
+        else:
+            r -= 1
+            rightHand.pop(-1)
+
+
+    #if the left hand is not empty:
+    while len(leftHand) > 0:
+        shuffledDeck.insert(0, leftHand[-1])
+        leftHand.pop(-1)
+    
+    #if it is the right hand that is not empty:
+    while len(rightHand) > 0:
+        shuffledDeck.insert(0, rightHand[-1])
+        rightHand.pop(-1)
+
+
+    #the first index is the top of the deck, the last index is the bottom of the deck
+    return shuffledDeck
+
+    
+
+
+shuffleCounter = int(input("Enter the amount of times you want to shuffle: "))
+deck = [0, 1, 2, 3, 4, 5, 6]
+deckTwo = [0, 1, 2, 3, 4, 5, 6]
+
+for x in range(shuffleCounter):
+    deck = topDownshuffle(deck)
+
+print(f'This is the deck after {shuffleCounter} shuffles:')
+print(deck)
+print()
+print(f'This is the deck after a riffle shuffle: ')
+print(riffleShuffle(deckTwo))
+
+
+
